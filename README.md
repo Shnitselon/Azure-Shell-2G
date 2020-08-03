@@ -62,17 +62,17 @@ The following table describes attributes that are unique to this shell and are n
 |Attribute Name|Data Type|Description|
 |:---|:---|:---|
 |VM Size|String|The Microsoft Azure VM Size. The VM Size determines the CPU, memory, disk size and networking capacity of the VM. For example: “Standard_A1_v2”|
-|Azure Subscription ID|String|The Subscription ID of the Azure user|
-|Azure Tenant ID|String|The Azure Tenant Id that is associated with your Azure Active Directory (AAD) instance. For example: ccd13026-98e3-4e90-01f4-28e2afdf3213. The Tenant ID is created for the Active Directory and can be retrieved when creating the Azure API web application or retrieved from Azure CLI|
-|Azure Application ID|String|Application Id associated with the Azure API application. The application ID allows CloudShell to access the Azure API and is generated as part of the web application’s configuration process|
-|Azure Application Key|Password|Application key associated with the Azure API application. The application key allows CloudShell to access the Azure API and is generated as part of the Azure application’s configuration process|
-|Management Group Name|String|The name of the Management Resource Group|
-|Additional Mgmt Networks|String|Networks to be allowed to interact with all sandboxes. This is used for allowing connectivity to Azure resources outside the CloudShell Management VNet that should be available to CloudShell sandboxes. The syntax is comma separated CIDRs.|
-|Private IP Allocation Method|String|Defines the method that will be used to allocated private ip addresses to VMs. When Cloudshell Allocation method is selected the Azure-Shell will use the CloudShell Pool API to checkout the next available ip address when needed. When the instance is deleted the checked out ip addresses will be released. When Azure Allocation method is selected the private ips will be assigned by Azure when creating the network interface.|
+|Azure Subscription ID|String|The Subscription ID of the Azure user.|
+|Azure Tenant ID|String|The Azure Tenant Id that is associated with your Azure Active Directory (AAD) instance. For example: ccd13026-98e3-4e90-01f4-28e2afdf3213. The Tenant ID is created for the Active Directory and can be retrieved when creating the Azure API web application or retrieved from Azure CLI.|
+|Azure Application ID|String|The application ID that is associated with the Azure API application. The application ID allows CloudShell to access the Azure API and is generated as part of the web application’s configuration process.|
+|Azure Application Key|Password|The application key that is associated with the Azure API application. The application key allows CloudShell to access the Azure API and is generated as part of the Azure application’s configuration process.|
+|Management Group Name|String|The name of the Management Resource Group.|
+|Additional Mgmt Networks|String|The networks to be allowed to interact with all sandboxes. This is used for allowing connectivity to Azure resources outside the CloudShell Management VNet that should be available to CloudShell sandboxes. The syntax is comma separated CIDRs.|
+|Private IP Allocation Method|String|The method to be used to allocated private ip addresses to VMs. When Cloudshell Allocation method is selected the Azure-Shell will use the CloudShell Pool API to checkout the next available ip address when needed. When the instance is deleted the checked out ip addresses will be released. When Azure Allocation method is selected the private ips will be assigned by Azure when creating the network interface.|
 
 
 ### Automation
-This section describes the automation (driver) associated with the data model. The shell’s driver is provided as part of the shell package. There are two types of automation processes, Autoload and Resource. Autoload is executed when creating the resource in the **Inventory** dashboard.
+This section describes the automation (driver) associated with the data model. The shell’s driver is provided as part of the shell package. There are two types of automation processes, Autoload and Resource. Autoload is executed when creating the resource in the **Inventory** dashboard and is used to "discover" or validate the resource's settings against the Azure region while Resource commands are processes related to the Azure VMs deployed in the sandbox.
 
 For detailed information on each available commands, see the following section of the Cloud Provider Standard:
 
@@ -107,20 +107,9 @@ This section describes how to import the Azure Shell 2 Gen shell and configure a
 
 ### Offline installation of a shell
 
-**Note:** Offline installation instructions are relevant only if CloudShell Execution Server has no access to PyPi. You can skip this section if your execution server has access to PyPi. For additional information, see the online help topic on offline dependencies.
+**Note:** Offline installation instructions only apply if your Quali Server and/or execution servers do not have access to the public PyPi repository.
 
-In offline mode, import the shell into CloudShell and place any dependencies in the appropriate dependencies folder. The dependencies folder may differ, depending on the CloudShell version you are using:
-
-* For CloudShell version 8.3 and above, see [Adding Shell and script packages to the local PyPi Server repository](#adding-shell-and-script-packages-to-the-local-pypi-server-repository).
-
-* For CloudShell version 8.2, perform the appropriate procedure: [Adding Shell and script packages to the local PyPi Server repository](#adding-shell-and-script-packages-to-the-local-pypi-server-repository) or [Setting the Python pythonOfflineRepositoryPath configuration key](#setting-the-python-pythonofflinerepositorypath-configuration-key).
-
-* For CloudShell versions prior to 8.2, see [Setting the Python pythonOfflineRepositoryPath configuration key](#setting-the-python-pythonofflinerepositorypath-configuration-key).
-
-### Adding shell and script packages to the local PyPi Server repository
 If your Quali Server and/or execution servers work offline, you will need to copy all required Python packages, including the out-of-the-box ones, to the PyPi Server's repository on the Quali Server computer (by default *C:\Program Files (x86)\QualiSystems\CloudShell\Server\Config\Pypi Server Repository*).
-
-For more information, see [Configuring CloudShell to Execute Python Commands in Offline Mode](http://help.quali.com/Online%20Help/9.0/Portal/Content/Admn/Cnfgr-Pyth-Env-Wrk-Offln.htm?Highlight=Configuring%20CloudShell%20to%20Execute%20Python%20Commands%20in%20Offline%20Mode).
 
 **To add Python packages to the local PyPi Server repository:**
   1. If you haven't created and configured the local PyPi Server repository to work with the execution server, perform the steps in [Add Python packages to the local PyPi Server repository (offline mode)](http://help.quali.com/Online%20Help/9.0/Portal/Content/Admn/Cnfgr-Pyth-Env-Wrk-Offln.htm?Highlight=offline%20dependencies#Add). 
@@ -133,7 +122,9 @@ For more information, see [Configuring CloudShell to Execute Python Commands in 
       * In the [Quali Community's Integrations](https://community.quali.com/integrations) page, locate the shell and click the shell's **Download** link. In the page that is displayed, from the Downloads area, extract the dependencies package zip file.
 
 3. Place these zip files in the local PyPi Server repository.
- 
+
+For more information, see [Configuring CloudShell to Execute Python Commands in Offline Mode](http://help.quali.com/Online%20Help/9.0/Portal/Content/Admn/Cnfgr-Pyth-Env-Wrk-Offln.htm?Highlight=Configuring%20CloudShell%20to%20Execute%20Python%20Commands%20in%20Offline%20Mode).
+
 ### Configuring a new resource
 This section explains how to create a new resource from the shell.
 
@@ -162,7 +153,7 @@ You can also modify existing resources, see [Managing Resources in the Inventory
 
 CloudShell validates provided settings and creates the new resource.
 
-_**Azure Shell 2 Gen requires you to create an appropriate App template, which would be deployed as part of the sandbox reservation. For details, see the following CloudShell Help article: [Applications' Typical Workflow](https://help.quali.com/Online%20Help/0.0/Portal/Content/CSP/MNG/Mng-Apps.htm?Highlight=App#Adding)**_
+_**Azure Shell 2 Gen requires you to create an appropriate App template, which will be deployed as part of the sandbox reservation. For details, see the following CloudShell Help article: [Adding App Templates](https://help.quali.com/Online%20Help/0.0/Portal/Content/CSP/MNG/Mng-Apps.htm?Highlight=App#Adding)**_
 
 # Updating Python Dependencies for Shells
 This section explains how to update your Python dependencies folder. This is required when you upgrade a shell that uses new/updated dependencies. It applies to both online and offline dependencies.
